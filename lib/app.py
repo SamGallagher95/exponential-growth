@@ -18,10 +18,11 @@ class App():
         self.travelRange = travelRange
 
         self.initNodes()
-        self.printNodeMap()
 
         for i in range(initialInfected):
             self.infectRandomNode()
+        
+        self.printNodeMap()
 
         bar = progressbar.ProgressBar(maxval=tickCount,widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
         bar.start()
@@ -33,8 +34,8 @@ class App():
             count += 1
 
             # Check if we need to redraw the nodeMap
-            if count % 100 == 0:
-                self.printNodeMap()
+            if count % 10 == 0:
+                self.printNodeMap(x=count)
 
             # Check the status of the count
             if flag is True or count > tickCount:
@@ -57,7 +58,9 @@ class App():
 
         infectedCount = 0
         for node in self.nodes:
-            node.newPosition(maxRange=self.travelRange)
+            nodes = self.nearbyNodes(node)
+            node.newSocialDistancingPositioning(nodes, maxRange=self.travelRange)
+            # node.newPosition(maxRange=self.travelRange)
             if node.infected is False:
                 if self.chanceInfection(node) is True:
                     node.infect()
@@ -95,14 +98,24 @@ class App():
         self.printInfectedGraph()
         self.printInfectedGrowth()
 
-    def printNodeMap(self):
+    def nearbyNodes(self, node):
+        k = self.size / 4
+        max_x = node.x + k
+        min_x = node.x - k
+        max_y = node.y + k
+        min_y = node.y - k
+        return list(filter(lambda n: n.x < max_x and n.x > min_x and n.y < max_y and n.y > min_y, self.nodes))
+
+    def printNodeMap(self, x=0):
         fig, ax = plt.subplots(nrows=1, ncols=1)
+        ax.axis([-100, self.size + 100, -100, self.size + 100])
+        ax.set_autoscale_on(False)
         for node in self.nodes:
             color = "green"
             if node.infected is True:
                 color = "red"
             ax.plot(node.x, node.y, "o", color=color)
-        fig.savefig("nodeMap.png")
+        fig.savefig(f"nodeMap_{x}.png")
         plt.close(fig)
     
     def printInfectedGraph(self):

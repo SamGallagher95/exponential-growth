@@ -1,9 +1,9 @@
 from lib import app
 
 numNodes = 1000
-size = 100
-travelRange = 5
-infectionRate = .3
+size = 300
+travelRange = 4
+infectionRate = .7
 infectionChance = 1
 initialInfected = 5
 tickCount = 500
