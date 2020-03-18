@@ -58,7 +58,7 @@ class Node():
                 angles.append(math.sin(x / y))
         
         avg = reduce(lambda a, x: a + x, angles) / len(angles)
-        avg *= math.pi
+        avg *= math.pi * -1
 
         m = (random.random() * maxRange) * self.getSign()
 
